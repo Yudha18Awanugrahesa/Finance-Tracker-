@@ -363,19 +363,19 @@ const GlobalStyle = () => (
     .mobile-only { display: none; }
 
     @media (max-width: 900px) {
-      .ft-shell { grid-template-columns: 1fr; }
-      .ft-sidebar { display: none; }
-      .ft-topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding:[cite: 3] 14px 16px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 40; }
-      .ft-page { padding: 18px 14px 90px; }
-      .stat-grid { grid-template-columns: repeat(2, 1fr); }
-      .grid-2 { grid-template-columns: 1fr; }
-      .form-grid { grid-template-columns: 1fr; }
-      .target-grid { grid-template-columns: 1fr; }
-      .ft-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 6px 4px 8px; justify-content: space-around; z-index: 50; }
+      .ft-shell { display: block !important; }
+      .ft-sidebar { display: none !important; }
+      .ft-topbar { display: flex !important; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 40; }
+      .ft-page { padding: 18px 14px 90px !important; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .form-grid { grid-template-columns: 1fr !important; }
+      .target-grid { grid-template-columns: 1fr !important; }
+      .ft-bottom-nav { display: flex !important; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 6px 4px 8px; justify-content: space-around; z-index: 50; }
       .ft-bottom-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; color: var(--text-muted); background: none; border: none; padding: 5px 4px; font-weight: 600; flex: 1; }
       .ft-bottom-item.active { color: var(--accent-dark); }
     }
-
+    
     @media (max-width: 768px) {
       .desktop-only { display: none; }
       .mobile-only { display: block; }
