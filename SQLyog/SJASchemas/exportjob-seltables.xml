@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job version="13.00">
+<exportjob>
+<passwords isencoded="yes" />
+<source>
+<host>192.168.1.128</host>
+<user>root</user>
+<pwd>Obe3Og==</pwd>
+<port>3309</port>
+<compressed>1</compressed><readonly>0</readonly>
+<ssl>0</ssl>
+<sslauth>0</sslauth>
+<clientkey></clientkey>
+<clientcert></clientcert>
+<cacert></cacert>
+<cipher></cipher>
+<charset></charset>
+</source>
+<export>
+<databases all="no">
+<database name = "sakila">
+<objects all="no">
+<tables all="no">
+<table>actor</table>
+<table>actor_info</table>
+<table>address</table>
+</tables>
+</objects>
+</database>
+</databases>
+<script compress="no" fileordir="file" timestampdir="" timestamp="yes">C:\Data_Folders\Work\Job files\strct.sql</script>
+</export>
+<options>
+<createdb>yes</createdb>
+<usedb>yes</usedb>
+<dropobjects>yes</dropobjects>
+<ignoredefiner>yes</ignoredefiner>
+<bulkinsert>yes</bulkinsert>
+<onerow>yes</onerow>
+<completeinsert>yes</completeinsert>
+<insertdelayed>yes</insertdelayed>
+<flushlogs>no</flushlogs>
+<purgemaster>no</purgemaster>
+<locktableread>no</locktableread>
+<singletransaction>no</singletransaction>
+<disablekeys>yes</disablekeys>
+<locktablewrite>no</locktablewrite>
+<hexblob>yes</hexblob>
+<fkchecks>yes</fkchecks>
+<autocommit>yes</autocommit>
+<includeversion>no</includeversion>
+<usecharset>utf8</usecharset>
+<bulksize>0</bulksize>
+<appendtofile>no</appendtofile>
+</options>
+<abortonerror>no</abortonerror>
+<sendreport send="no" /></exportjob>
+</job>

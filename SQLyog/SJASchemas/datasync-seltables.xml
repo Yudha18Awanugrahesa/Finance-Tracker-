@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job version="13.00">
+<syncjob>
+<fkcheck check="no" />
+<twowaysync twoway="yes" />
+<passwords isencoded="yes" />
+<source>
+<host>192.168.1.128</host>
+<user>root</user>
+<pwd>Obe3Og==</pwd>
+<port>3309</port>
+<compressed>1</compressed><readonly>0</readonly>
+<ssl>0</ssl>
+<sslauth>0</sslauth>
+<clientkey></clientkey>
+<clientcert></clientcert>
+<cacert></cacert>
+<cipher></cipher>
+<charset></charset>
+<database>test</database>
+</source>
+<target>
+<host>192.168.1.128</host>
+<user>root</user>
+<pwd>Obe3Og==</pwd>
+<port>3309</port>
+<compressed>1</compressed><readonly>0</readonly>
+<ssl>0</ssl>
+<sslauth>0</sslauth>
+<clientkey></clientkey>
+<clientcert></clientcert>
+<cacert></cacert>
+<cipher></cipher>
+<charset></charset>
+<database>test</database>
+</target>
+<tables all="no">
+<table>
+<name>`dimaccount`</name>
+<columns all="yes" />
+</table>
+<table>
+<name>`query-result-2_csv`</name>
+<columns all="yes" />
+</table>
+</tables>
+<sync_action type="directsync" />
+<abortonerror abort="no" />
+<sendreport send="no" /></syncjob>
+</job>

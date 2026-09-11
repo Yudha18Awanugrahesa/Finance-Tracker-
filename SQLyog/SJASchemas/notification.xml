@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job version="13.00">
+<notifyjob>
+<abortonerror value="yes" />
+<result value="yes" />
+<includequery value="yes" />
+<includemsg value="yes" />
+<includecsv value="yes" />
+<passwords isencoded="yes" />
+<source>
+<host>192.168.1.128</host>
+<user>root</user>
+<pwd>Obe3Og==</pwd>
+<port>3309</port>
+<compressed>1</compressed><readonly>0</readonly>
+<ssl>0</ssl>
+<sslauth>0</sslauth>
+<clientkey></clientkey>
+<clientcert></clientcert>
+<cacert></cacert>
+<cipher></cipher>
+<charset></charset>
+<database>sakila</database>
+</source>
+<smtp>
+<displayname>xyz@gmail.com</displayname>
+<toemail>xyz@gmail.com</toemail>
+<fromemail>abc@gmail.com</fromemail>
+<cc>xyza@gmail.com</cc>
+<bcc>syz@gmail.com</bcc>
+<replyemail>abc@gmail.com</replyemail>
+<host>smtp-mail.outlook.com</host>
+<encryption>tls</encryption>
+<port>25</port>
+<auth required="yes">
+<user>abc@gmail.com</user>
+<pwd>sDGxsQ==</pwd>
+</auth>
+<subject>Subject</subject>
+</smtp>
+<query>select 1;</query>
+</notifyjob>
+</job>

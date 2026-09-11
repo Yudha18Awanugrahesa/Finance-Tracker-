@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<job version="13.00">
+<odbcimport>
+<fkcheck check="no" />
+<passwords isencoded="yes" />
+<source>
+<host>192.168.1.128</host>
+<user>root</user>
+<pwd>Obe3Og==</pwd>
+<port>3309</port>
+<compressed>1</compressed><readonly>0</readonly>
+<ssl>0</ssl>
+<sslauth>0</sslauth>
+<clientkey></clientkey>
+<clientcert></clientcert>
+<cacert></cacert>
+<cipher></cipher>
+<charset></charset>
+<database>sakila</database>
+</source>
+<dsn type="csv">
+<name>C:\Data_Folders</name>
+<user/>
+<pwd/>
+</dsn>
+<import source="data">
+</import>
+<export target="data">
+</export>
+<tables all="no">
+<table source="csvfile.csv" target="csvfile_csv" type="InnoDB" index="yes" foreignkey="yes">
+<ddl onconflict="import"/>
+<dml import="yes" truncatetablecontent="no" onconflict="update" />
+<triggers>
+<delete>no</delete>
+</triggers>
+<whereclause></whereclause>
+<columns>
+</columns>
+</table>
+</tables>
+<abortonerror>yes</abortonerror>
+<sendreport send="no" /></odbcimport>
+</job>
