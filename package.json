@@ -14,9 +14,8 @@
     "express": "^5.2.1",
     "lucide-react": "^1.43.0",
     "mysql2": "^3.24.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "recharts": "^3.10.1"
+    "recharts": "^3.10.1",
+    "vite": "^8.2.2"
   },
   "devDependencies": {
     "vite": "^8.2.2"
