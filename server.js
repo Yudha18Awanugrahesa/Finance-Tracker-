@@ -1,6 +1,6 @@
-const express = require("express");
-const mysql = require("mysql2");
-const cors = require("cors");
+import express from "express";
+import mysql from "mysql2";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
@@ -32,7 +32,6 @@ app.post("/api/transactions", (req, res) => {
     keterangan,
   } = req.body;
 
-  // Cukup masukkan 7 kolom data saja, ID biarkan kosong agar terisi otomatis
   const query =
     "INSERT INTO transactions (Tanggal, Deskripsi, Jenis_Transaksi, Kategori, Nominal, Metode_Pembayaran, Keterangan) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -55,11 +54,10 @@ app.post("/api/transactions", (req, res) => {
       res
         .status(201)
         .json({ message: "Transaksi berhasil disimpan!", id: result.insertId });
-    },
+    }
   );
 });
 
-// === TAMBAHKAN ENDPOINT GET INI DI SINI ===
 app.get("/api/transactions", (req, res) => {
   const query = "SELECT * FROM transactions ORDER BY ID DESC";
 
@@ -71,7 +69,6 @@ app.get("/api/transactions", (req, res) => {
     res.json(results);
   });
 });
-// ==========================================
 
 const PORT = 5000;
 app.listen(PORT, () => {

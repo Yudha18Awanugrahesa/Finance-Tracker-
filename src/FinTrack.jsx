@@ -3236,6 +3236,28 @@ const NAV_BUSINESS = [
 /* ======================= APP ======================= */
 
 export default function FinTrackApp() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState("Menyiapkan enkripsi dompet...");
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= 100) {
+          clearInterval(timer);
+          setTimeout(() => setIsLoading(false), 400);
+          return 100;
+        }
+        const nextProgress = oldProgress + 25;
+        if (nextProgress === 50) setStatusText("Memuat data multi-wallet & anggaran...");
+        if (nextProgress === 75) setStatusText("Sinkronisasi transaksi bank & AI Insights...");
+        if (nextProgress === 100) setStatusText("Berhasil masuk! Membuka dashboard...");
+        return nextProgress;
+      });
+    }, 500);
+    return () => clearInterval(timer);
+  }, []);
+
   const [mode, setMode] = useState("pribadi");
   const [page, setPage] = useState("dashboard");
   const [showTransfer, setShowTransfer] = useState(false);
@@ -3244,26 +3266,25 @@ export default function FinTrackApp() {
   const [personalTransactions, personalTxCrud] = useCrud(
     initialPersonalTransactions,
   );
-  // TEMPELKAN KODE useEffect DI SINI (sekitar baris 1723)
-     useEffect(() => {
-       fetch("http://localhost:5000/api/transactions")
-         .then((res) => res.json())
-         .then((data) => {
-           const formattedData = data.map((item) => ({
-             id: item.ID,
-             date: item.Tanggal,
-             type: item.Jenis_Transaksi === "Pemasukan" ? "in" : "out",
-             category: item.Kategori,
-             amount: Number(item.Nominal) || 0,
-             description: item.Deskripsi,
-             method: item.Metode_Pembayaran,
-             note: item.Keterangan,
-             isTransfer: false,
-           }));
-           personalTxCrud.setItems(formattedData);
-         })
-         .catch((err) => console.error("Gagal memuat data awal:", err));
-     }, []);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/transactions")
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedData = data.map((item) => ({
+          id: item.ID,
+          date: item.Tanggal,
+          type: item.Jenis_Transaksi === "Pemasukan" ? "in" : "out",
+          category: item.Kategori,
+          amount: Number(item.Nominal) || 0,
+          description: item.Deskripsi,
+          method: item.Metode_Pembayaran,
+          note: item.Keterangan,
+          isTransfer: false,
+        }));
+        personalTxCrud.setItems(formattedData);
+      })
+      .catch((err) => console.error("Gagal memuat data awal:", err));
+  }, []);
   const [personalTargets, personalTargetsCrud] = useCrud(
     initialPersonalTargets,
   );
@@ -3479,6 +3500,68 @@ export default function FinTrackApp() {
 
   const bottomMain = nav.slice(0, 4);
   const bottomMore = nav.slice(4);
+
+  if (isLoading) {
+    return (
+      <div className={`ft-root theme-${mode}`}>
+        <GlobalStyle />
+        <div className="fixed inset-0 bg-slate-950 flex flex-col justify-between items-center p-6 z-50 selection:bg-emerald-500 selection:text-white" style={{backgroundColor: '#090d16', color: '#f8fafc', position: 'fixed', inset: 0, zIndex: 9999}}>
+          
+          <div className="w-full max-w-md flex justify-center pt-8">
+            <div className="flex items-center space-x-2" style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <div className="bg-emerald-500 text-slate-950 p-2 rounded-xl font-bold text-xl flex items-center justify-center" style={{background: '#10b981', color: '#030712', padding: '10px', borderRadius: '12px', fontWeight: 'bold'}}>
+                <svg className="w-6 h-6" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <span className="text-2xl font-bold tracking-tight text-white" style={{fontSize: '24px', fontWeight: '700'}}>Fin<span style={{color: '#34d399'}}>Track</span></span>
+            </div>
+          </div>
+
+          <div className="w-full max-w-sm flex flex-col items-center text-center space-y-6" style={{maxWidth: '380px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px'}}>
+            
+            <div className="relative flex items-center justify-center" style={{position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <div className="relative w-20 h-20 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center shadow-2xl" style={{width: '80px', height: '80px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <svg className="w-10 h-10 text-emerald-400" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" style={{color: '#34d399'}}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div className="w-full bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3 text-left" style={{width: '100%', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(30, 41, 59, 0.8)', padding: '14px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left'}}>
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Avatar" style={{width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(16, 185, 129, 0.5)'}} />
+              <div style={{overflow: 'hidden'}}>
+                <p style={{fontSize: '11px', color: '#94a3b8', margin: 0, fontWeight: 500}}>Akun Terhubung</p>
+                <h4 style={{fontSize: '14px', fontWeight: '600', color: '#ffffff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>Yudha Awanugrahesa</h4>
+                <p style={{fontSize: '11.5px', color: '#34d399', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>yudha@fintrack.co</p>
+              </div>
+            </div>
+
+            <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
+              <h3 style={{fontSize: '15px', fontWeight: 500, color: '#e2e8f0', margin: 0}}>{statusText}</h3>
+              <p style={{fontSize: '12px', color: '#64748b', margin: 0}}>Mohon tunggu sebentar, data keuangan Anda sedang disinkronkan.</p>
+            </div>
+
+            <div style={{width: '100%', display: 'flex', flexDirection: 'column', gap: '8px'}}>
+              <div style={{width: '100%', background: '#0f172a', height: '8px', borderRadius: '999px', overflow: 'hidden', border: '1px solid #1e293b', padding: '1px'}}>
+                <div style={{background: 'linear-gradient(to right, #059669, #34d399)', height: '100%', borderRadius: '999px', width: `${progress}%`, transition: 'width 0.3s ease-out'}}></div>
+              </div>
+              <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#64748b', fontWeight: 500}}>
+                <span>Sinkronisasi Keamanan</span>
+                <span>{progress}%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div style={{fontSize: '11.5px', color: '#64748b', paddingBottom: '10px'}}>
+            Protected by FinTrack SecureVault™ 256-bit
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`ft-root theme-${mode}`}>
