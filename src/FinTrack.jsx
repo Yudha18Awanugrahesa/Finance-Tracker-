@@ -283,7 +283,6 @@ const GlobalStyle = () => (
     .ft-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
     .ft-page-header h2 { font-size: 21px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
     .ft-page-header p { font-size: 13px; color: var(--text-muted); margin: 3px 0 0; }
-    .ft-transfer-btn { display: flex; align-items: center; gap: 6px; background: var(--text); color: #fff; border: none; padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
     .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 15px 16px; }
     .stat-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--accent-tint); color: var(--accent-dark); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
@@ -903,27 +902,6 @@ function PersonalTransactions({ transactions, crud }) {
   const [filterCat, setFilterCat] = useState("");
   const [modal, setModal] = useState(null);
 
-  // Ambil data otomatis dari database XAMPP saat halaman pertama kali dibuka atau direfresh
-  useEffect(() => {
-    fetch("http://localhost:5000/api/transactions")
-      .then((res) => res.json())
-      .then((data) => {
-        const formattedData = data.map((item) => ({
-          id: item.ID,
-          date: item.Tanggal,
-          type: item.Jenis_Transaksi === "Pemasukan" ? "in" : "out",
-          category: item.Kategori,
-          amount: Number(item.Nominal) || 0,
-          description: item.Deskripsi,
-          method: item.Metode_Pembayaran,
-          note: item.Keterangan,
-          isTransfer: false,
-        }));
-        crud.setItems(formattedData);
-      })
-      .catch((err) => console.error("Gagal memuat data dari database:", err));
-  }, []);
-
   const rows = useMemo(() => {
     return transactions
       .filter((t) => !filterType || t.type === filterType)
@@ -977,7 +955,6 @@ function PersonalTransactions({ transactions, crud }) {
       typeLabel: row.type === "in" ? "Pemasukan" : "Pengeluaran",
     });
 
-  // FUNGSI SUBMIT (Kirim ke backend dulu, jika sukses baru update state lokal)
   const handleSubmit = async (values) => {
     try {
       const transactionDataToBackend = {
@@ -1001,8 +978,6 @@ function PersonalTransactions({ transactions, crud }) {
       const result = await response.json();
 
       if (response.ok) {
-        console.log("Berhasil masuk ke database XAMPP:", result.message);
-
         const payload = {
           id: result.id,
           date: values.date,
@@ -1020,14 +995,9 @@ function PersonalTransactions({ transactions, crud }) {
 
         setModal(null);
       } else {
-        console.error("Gagal simpan ke database:", result.error);
         alert("Gagal menyimpan ke database: " + result.error);
       }
     } catch (error) {
-      console.error(
-        "Server backend (port 5000) tidak aktif atau terputus:",
-        error,
-      );
       alert("Tidak dapat terhubung ke server backend di port 5000!");
     }
   };
@@ -1129,7 +1099,9 @@ function PersonalTransactions({ transactions, crud }) {
       )}
     </div>
   );
-} /* ======================= MODE PRIBADI: CASH FLOW ======================= */
+}
+
+/* ======================= MODE PRIBADI: CASH FLOW ======================= */
 
 function PersonalCashflow({ transactions }) {
   const data = useMemo(() => {
@@ -3236,27 +3208,13 @@ const NAV_BUSINESS = [
 /* ======================= APP ======================= */
 
 export default function FinTrackApp() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Menyiapkan enkripsi dompet...");
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress >= 100) {
-          clearInterval(timer);
-          setTimeout(() => setIsLoading(false), 400);
-          return 100;
-        }
-        const nextProgress = oldProgress + 25;
-        if (nextProgress === 50) setStatusText("Memuat data multi-wallet & anggaran...");
-        if (nextProgress === 75) setStatusText("Sinkronisasi transaksi bank & AI Insights...");
-        if (nextProgress === 100) setStatusText("Berhasil masuk! Membuka dashboard...");
-        return nextProgress;
-      });
-    }, 500);
-    return () => clearInterval(timer);
-  }, []);
 
   const [mode, setMode] = useState("pribadi");
   const [page, setPage] = useState("dashboard");
@@ -3307,6 +3265,33 @@ export default function FinTrackApp() {
     initialBusinessTargets,
   );
   const [stockMovements, stockMovementsCrud] = useCrud(initialStockMovements);
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      alert("Mohon masukkan email dan password!");
+      return;
+    }
+    
+    setIsLoggedIn(true);
+    setIsLoading(true);
+    setProgress(0);
+
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= 100) {
+          clearInterval(timer);
+          setTimeout(() => setIsLoading(false), 400);
+          return 100;
+        }
+        const nextProgress = oldProgress + 25;
+        if (nextProgress === 50) setStatusText("Memuat data multi-wallet & anggaran...");
+        if (nextProgress === 75) setStatusText("Sinkronisasi transaksi bank & AI Insights...");
+        if (nextProgress === 100) setStatusText("Berhasil masuk! Membuka dashboard...");
+        return nextProgress;
+      });
+    }, 500);
+  };
 
   const switchMode = (m) => {
     setMode(m);
@@ -3501,6 +3486,67 @@ export default function FinTrackApp() {
   const bottomMain = nav.slice(0, 4);
   const bottomMore = nav.slice(4);
 
+  // 1. KONDISI 1: Tampilkan Halaman Login jika belum masuk
+  if (!isLoggedIn) {
+    return (
+      <div className="ft-root">
+        <GlobalStyle />
+        <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#090d16', padding: '16px'}}>
+          <div style={{width: '100%', maxWidth: '400px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'}}>
+            
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '24px'}}>
+              <div style={{background: '#10b981', color: '#030712', padding: '10px', borderRadius: '12px', fontWeight: 'bold'}}>
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <span style={{fontSize: '24px', fontWeight: '700', color: '#ffffff'}}>Fin<span style={{color: '#34d399'}}>Track</span></span>
+            </div>
+
+            <h2 style={{fontSize: '18px', fontWeight: '600', color: '#f8fafc', textAlign: 'center', marginBottom: '6px'}}>Masuk ke Akun Anda</h2>
+            <p style={{fontSize: '13px', color: '#94a3b8', textAlign: 'center', marginBottom: '24px'}}>Kelola keuangan pribadi & usaha dengan aman</p>
+
+            <form onSubmit={handleLoginSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                <label style={{fontSize: '12.5px', fontWeight: '600', color: '#cbd5e1'}}>Email FinTrack</label>
+                <input 
+                  type="email" 
+                  className="input" 
+                  placeholder="nama@fintrack.co" 
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  style={{background: '#090d16', border: '1px solid #334155', color: '#fff', padding: '10px 12px', borderRadius: '10px'}}
+                  required 
+                />
+              </div>
+
+              <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                <label style={{fontSize: '12.5px', fontWeight: '600', color: '#cbd5e1'}}>Password</label>
+                <input 
+                  type="password" 
+                  className="input" 
+                  placeholder="••••••••" 
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  style={{background: '#090d16', border: '1px solid #334155', color: '#fff', padding: '10px 12px', borderRadius: '10px'}}
+                  required 
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{marginTop: '8px', padding: '12px', justifyContent: 'center', background: '#10b981', color: '#030712', fontWeight: 'bold', border: 'none', borderRadius: '10px', cursor: 'pointer'}}>
+                Masuk & Sinkronisasi
+              </button>
+            </form>
+
+            <div style={{marginTop: '20px', textAlign: 'center', fontSize: '12px', color: '#64748b'}}>
+              Protected by FinTrack SecureVault™ 256-bit
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. KONDISI 2: Tampilkan Halaman Loading saat proses sinkronisasi setelah login
   if (isLoading) {
     return (
       <div className={`ft-root theme-${mode}`}>
@@ -3532,8 +3578,8 @@ export default function FinTrackApp() {
               <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Avatar" style={{width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(16, 185, 129, 0.5)'}} />
               <div style={{overflow: 'hidden'}}>
                 <p style={{fontSize: '11px', color: '#94a3b8', margin: 0, fontWeight: 500}}>Akun Terhubung</p>
-                <h4 style={{fontSize: '14px', fontWeight: '600', color: '#ffffff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>Yudha Awanugrahesa</h4>
-                <p style={{fontSize: '11.5px', color: '#34d399', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>yudha@fintrack.co</p>
+                <h4 style={{fontSize: '14px', fontWeight: '600', color: '#ffffff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{loginEmail || "Yudha Awanugrahesa"}</h4>
+                <p style={{fontSize: '11.5px', color: '#34d399', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>Terverifikasi</p>
               </div>
             </div>
 
@@ -3563,6 +3609,7 @@ export default function FinTrackApp() {
     );
   }
 
+  // 3. KONDISI 3: Tampilkan Dashboard Utama setelah login & loading selesai
   return (
     <div className={`ft-root theme-${mode}`}>
       <GlobalStyle />
